@@ -5,71 +5,79 @@ using UnityEngine;
 
 public class SnakeMovement : MonoBehaviour
 {
-    private Vector2Int snakeMoveDirection;
-    private Vector2Int snakePosition;
-    private float snakeMoveTimer;
-    private float snakeMoveTimerMax;
+    private Vector2Int gridMoveDirection;
+    private Vector2Int gridPosition;
+    private float gridMoveTimer;
+    private float gridMoveTimerMax;
+    internal static object i;
+    private LevelGrid levelGrid;
+
+    public void Setup(LevelGrid levelGrid)
+    {
+        this.levelGrid = levelGrid;
+    }
 
     private void Awake()
     {
-        snakeMoveDirection = new Vector2Int(1, 0);
-        snakePosition = new Vector2Int(25, 25);
-        snakeMoveTimerMax = 1f;
-        snakeMoveTimer = snakeMoveTimerMax;
+        gridMoveDirection = new Vector2Int(1, 0);
+        gridPosition = new Vector2Int(25, 25);
+        gridMoveTimerMax = 1f;
+        gridMoveTimer = gridMoveTimerMax;
     }
 
     private void Update()
     {
         HandleInput();
-        HandleSnakeMovement();
+        HandleGridMovement();
     }
 
     private void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if (snakeMoveDirection.y != -1)
+            if (gridMoveDirection.y != -1)
             {
-                snakeMoveDirection.x = 0;
-                snakeMoveDirection.y = 1;
+                gridMoveDirection.x = 0;
+                gridMoveDirection.y = 1;
             }
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (snakeMoveDirection.y != 1)
+            if (gridMoveDirection.y != 1)
             {
-                snakeMoveDirection.x = 0;
-                snakeMoveDirection.y = -1;
+                gridMoveDirection.x = 0;
+                gridMoveDirection.y = -1;
             }
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (snakeMoveDirection.x != 1)
+            if (gridMoveDirection.x != 1)
             {
-                snakeMoveDirection.x = -1;
-                snakeMoveDirection.y = 0;
+                gridMoveDirection.x = -1;
+                gridMoveDirection.y = 0;
             }
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (snakeMoveDirection.x != -1)
+            if (gridMoveDirection.x != -1)
             {
-                snakeMoveDirection.x = 1;
-                snakeMoveDirection.y = 0;
+                gridMoveDirection.x = 1;
+                gridMoveDirection.y = 0;
             }
         }
     }
 
-    private void HandleSnakeMovement()
+    private void HandleGridMovement()
     {
-        snakeMoveTimer += Time.deltaTime;
-        if (snakeMoveTimer >= snakeMoveTimerMax)
+        gridMoveTimer += Time.deltaTime;
+        if (gridMoveTimer >= gridMoveTimerMax)
         {
-            snakeMoveTimer -= snakeMoveTimerMax;
-            snakePosition += snakeMoveDirection;
+            gridMoveTimer -= gridMoveTimerMax;
+            gridPosition += gridMoveDirection;
 
-            transform.position = new Vector3(snakePosition.x, snakePosition.y);
-            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(snakeMoveDirection) - 90);
+            transform.position = new Vector3(gridPosition.x, gridPosition.y);
+            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirection) - 90);
+            levelGrid.SnakeMoved(gridPosition);
         }
     }
 
@@ -78,5 +86,10 @@ public class SnakeMovement : MonoBehaviour
         float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         if (n < 0) n += 360;
         return n;
+
+    }
+    public Vector2Int GetGridPosition()
+    {
+        return gridPosition;
     }
 }
